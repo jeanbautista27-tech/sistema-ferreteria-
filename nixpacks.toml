@@ -1,8 +1,8 @@
 [phases.setup]
-nixPkgs = ["nodejs_20", "npm-9_x"]
+nixPkgs = ["nodejs_20"]
 
 [phases.install]
-cmds = ["cd server && npm install"]
+cmds = ["cd server && npm install --production=false"]
 
 [phases.build]
 cmds = []
