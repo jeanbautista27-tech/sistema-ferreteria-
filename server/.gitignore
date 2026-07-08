@@ -1,0 +1,23 @@
+# ── Dependencias ─────────────────────────────────────────────
+node_modules/
+
+# ── Variables de entorno (NUNCA commitear) ────────────────────
+.env
+.env.local
+.env.production
+
+# ── Cobertura de pruebas ──────────────────────────────────────
+coverage/
+
+# ── Archivos subidos por usuarios ────────────────────────────
+uploads/
+
+# ── Backups generados por el sistema ─────────────────────────
+backups/
+
+# ── Logs ─────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+
+# ── PM2 ──────────────────────────────────────────────────────
+.pm2/

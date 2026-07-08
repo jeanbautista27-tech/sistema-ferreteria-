@@ -1,0 +1,39 @@
+# ── Dependencias ──────────────────────────────────────────────
+node_modules/
+
+# ── Variables de entorno (NUNCA commitear) ────────────────────
+.env
+.env.local
+.env.production
+.env.*.local
+
+# ── Build del frontend ────────────────────────────────────────
+client/dist/
+client/.vite/
+
+# ── Cobertura de pruebas ──────────────────────────────────────
+server/coverage/
+
+# ── Archivos subidos por usuarios ────────────────────────────
+server/uploads/
+
+# ── Backups generados por el sistema ─────────────────────────
+server/backups/
+
+# ── Logs ─────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+logs/
+
+# ── Sistema operativo ────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDEs ─────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
