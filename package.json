@@ -1,0 +1,13 @@
+{
+  "name": "sistema-ferreteria-backend",
+  "version": "1.0.0",
+  "description": "Sistema de Gestion para Ferreteria - Backend",
+  "scripts": {
+    "start": "cd server && node src/app.js",
+    "build": "cd server && npm install",
+    "install": "cd server && npm install"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
