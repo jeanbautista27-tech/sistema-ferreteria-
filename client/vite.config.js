@@ -28,6 +28,13 @@ export default defineConfig(({ mode }) => {
       },
     },
 
+    // Permitir todos los hosts externos en modo preview (Railway, etc.)
+    preview: {
+      host:         '0.0.0.0',
+      port:         parseInt(process.env.PORT) || 4173,
+      allowedHosts: 'all',
+    },
+
     // Define la variable en el bundle para que axios.js pueda usarla
     define: {
       __API_URL__: JSON.stringify(
