@@ -75,7 +75,7 @@ const create = async (req, res) => {
             }, { transaction: t });
         } else {
             // Si es al contado (Efectivo), debemos extraer el dinero de la Caja de inmediato
-            const cajaAbierta = await Caja.findOne({ where: { usuario_id: req.user.id, estado: 'Abierta' }, transaction: t });
+            const cajaAbierta = await Caja.findOne({ where: { estado: 'Abierta' }, transaction: t });
             if (!cajaAbierta) throw new Error('Se requiere una caja activa para procesar compras al contado. O envíe la compra al Crédito.');
 
             await CajaEgreso.create({
