@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const cotizacionesController = require('../controllers/cotizacionesController');
-const { verifyToken } = require('../middlewares/auth');
+const ctrl = require('../controllers/cotizacionesController');
+const { verifyToken, requireRole } = require('../middlewares/auth');
 
-router.get('/', verifyToken, cotizacionesController.getAll);
-router.get('/:id', verifyToken, cotizacionesController.getOne);
-router.post('/', verifyToken, cotizacionesController.create);
-router.put('/:id/anular', verifyToken, cotizacionesController.anular);
+// Cajero y Administrador gestionan cotizaciones
+const COTIZACIONES = requireRole('Administrador', 'Cajero');
+
+router.get('/',           verifyToken, COTIZACIONES, ctrl.getAll);
+router.get('/:id',        verifyToken, COTIZACIONES, ctrl.getOne);
+router.post('/',          verifyToken, COTIZACIONES, ctrl.create);
+router.put('/:id/anular', verifyToken, COTIZACIONES, ctrl.anular);
 
 module.exports = router;

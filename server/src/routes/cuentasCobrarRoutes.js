@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const cuentasCobrarController = require('../controllers/cuentasCobrarController');
-const { verifyToken } = require('../middlewares/auth');
+const ctrl = require('../controllers/cuentasCobrarController');
+const { verifyToken, requireRole } = require('../middlewares/auth');
 
-router.get('/', verifyToken, cuentasCobrarController.listar);
-router.get('/:id', verifyToken, cuentasCobrarController.detalle);
-router.post('/:id/abonos', verifyToken, cuentasCobrarController.registrarAbono);
+// Cajero y Administrador gestionan cuentas por cobrar
+const CXC = requireRole('Administrador', 'Cajero');
+
+router.get('/',             verifyToken, CXC, ctrl.listar);
+router.get('/:id',          verifyToken, CXC, ctrl.detalle);
+router.post('/:id/abonos',  verifyToken, CXC, ctrl.registrarAbono);
 
 module.exports = router;

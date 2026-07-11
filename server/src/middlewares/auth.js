@@ -16,6 +16,7 @@ const verifyToken = (req, res, next) => {
     }
 };
 
+// Mantiene compatibilidad total con las pruebas existentes
 const requireAdmin = (req, res, next) => {
     if (req.user?.rol !== 'Administrador') {
         return res.status(403).json({ ok: false, msg: 'Acceso denegado. Se requiere rol Administrador.' });
@@ -23,4 +24,19 @@ const requireAdmin = (req, res, next) => {
     next();
 };
 
-module.exports = { verifyToken, requireAdmin };
+/**
+ * Middleware genérico de roles.
+ * Uso: requireRole('Administrador', 'Almacenero')
+ * Acepta uno o varios roles permitidos.
+ */
+const requireRole = (...rolesPermitidos) => (req, res, next) => {
+    if (!req.user || !rolesPermitidos.includes(req.user.rol)) {
+        return res.status(403).json({
+            ok:  false,
+            msg: `Acceso denegado. Roles permitidos: ${rolesPermitidos.join(', ')}.`,
+        });
+    }
+    next();
+};
+
+module.exports = { verifyToken, requireAdmin, requireRole };

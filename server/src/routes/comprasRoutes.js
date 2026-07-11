@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const ctrl = require('../controllers/comprasController');
-const { verifyToken } = require('../middlewares/auth');
+const { verifyToken, requireRole } = require('../middlewares/auth');
 
-router.get('/', verifyToken, ctrl.getAll);
-router.get('/:id', verifyToken, ctrl.getOne);
-router.post('/', verifyToken, ctrl.create);
-router.put('/:id/recibir', verifyToken, ctrl.recibirCompra);
+// Almacenero y Administrador gestionan compras
+const COMPRAS = requireRole('Administrador', 'Almacenero');
+
+router.get('/',              verifyToken, COMPRAS, ctrl.getAll);
+router.get('/:id',           verifyToken, COMPRAS, ctrl.getOne);
+router.post('/',             verifyToken, COMPRAS, ctrl.create);
+router.put('/:id/recibir',   verifyToken, COMPRAS, ctrl.recibirCompra);
 
 module.exports = router;

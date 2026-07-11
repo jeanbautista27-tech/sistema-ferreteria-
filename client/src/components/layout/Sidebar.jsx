@@ -9,22 +9,29 @@ import useAuthStore from '../../store/authStore';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
 
+/**
+ * roles: lista de roles que pueden ver el ítem.
+ * Si no se especifica 'roles', lo ven todos los autenticados.
+ */
 const navItems = [
-    { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/pos', icon: ShoppingCart, label: 'Punto de Venta' },
-    { to: '/productos', icon: Package, label: 'Productos' },
-    { to: '/categorias', icon: Tag, label: 'Categorías' },
-    { to: '/inventario', icon: Warehouse, label: 'Inventario' },
-    { to: '/compras', icon: Truck, label: 'Compras' },
-    { to: '/proveedores', icon: Truck, label: 'Proveedores' },
-    { to: '/ventas', icon: TrendingUp, label: 'Ventas' },
-    { to: '/devoluciones', icon: RotateCcw, label: 'Devoluciones / NC' },
-    { to: '/clientes', icon: Users, label: 'Clientes' },
-    { to: '/caja', icon: DollarSign, label: 'Caja' },
-    { to: '/reportes', icon: FileBarChart, label: 'Reportes' },
-    { to: '/usuarios', icon: Shield, label: 'Usuarios' },
-    { to: '/configuracion', icon: Settings, label: 'Configuración' },
-    { to: '/mantenimiento', icon: HardDrive, label: 'Mantenimiento' },
+    { to: '/',             icon: LayoutDashboard, label: 'Dashboard'         },
+    { to: '/pos',          icon: ShoppingCart,    label: 'Punto de Venta',    roles: ['Administrador', 'Cajero'] },
+    { to: '/ventas',       icon: TrendingUp,      label: 'Ventas',            roles: ['Administrador', 'Cajero'] },
+    { to: '/cotizaciones', icon: FileBarChart,    label: 'Cotizaciones',      roles: ['Administrador', 'Cajero'] },
+    { to: '/devoluciones', icon: RotateCcw,       label: 'Devoluciones / NC', roles: ['Administrador', 'Cajero'] },
+    { to: '/clientes',     icon: Users,           label: 'Clientes',          roles: ['Administrador', 'Cajero'] },
+    { to: '/caja',         icon: DollarSign,      label: 'Caja',              roles: ['Administrador', 'Cajero'] },
+    { to: '/cuentas-cobrar', icon: DollarSign,    label: 'Cuentas por Cobrar',roles: ['Administrador', 'Cajero'] },
+    { to: '/productos',    icon: Package,         label: 'Productos',         roles: ['Administrador', 'Almacenero'] },
+    { to: '/categorias',   icon: Tag,             label: 'Categorías',        roles: ['Administrador', 'Almacenero'] },
+    { to: '/inventario',   icon: Warehouse,       label: 'Inventario',        roles: ['Administrador', 'Almacenero'] },
+    { to: '/compras',      icon: Truck,           label: 'Compras',           roles: ['Administrador', 'Almacenero'] },
+    { to: '/proveedores',  icon: Truck,           label: 'Proveedores',       roles: ['Administrador', 'Almacenero'] },
+    { to: '/cuentas-pagar',icon: DollarSign,      label: 'Cuentas por Pagar', roles: ['Administrador'] },
+    { to: '/reportes',     icon: FileBarChart,    label: 'Reportes',          roles: ['Administrador'] },
+    { to: '/usuarios',     icon: Shield,          label: 'Usuarios',          roles: ['Administrador'] },
+    { to: '/configuracion',icon: Settings,        label: 'Configuración',     roles: ['Administrador'] },
+    { to: '/mantenimiento',icon: HardDrive,       label: 'Mantenimiento',     roles: ['Administrador'] },
 ];
 
 export default function Sidebar({ isOpen, setIsOpen }) {
@@ -100,17 +107,23 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                 <div className="sidebar-heading">MENÚ</div>
 
                 <nav className="sidebar-nav">
-                    {navItems.map(item => (
-                        <NavLink
-                            key={item.to}
-                            to={item.to}
-                            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-                            onClick={() => setIsOpen(false)}
-                        >
-                            <item.icon size={18} />
-                            <span>{item.label}</span>
-                        </NavLink>
-                    ))}
+                    {navItems
+                        .filter(item =>
+                            // Sin restricción → visible para todos
+                            !item.roles || item.roles.includes(usuario?.rol)
+                        )
+                        .map(item => (
+                            <NavLink
+                                key={item.to}
+                                to={item.to}
+                                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                                onClick={() => setIsOpen(false)}
+                            >
+                                <item.icon size={18} />
+                                <span>{item.label}</span>
+                            </NavLink>
+                        ))
+                    }
                 </nav>
 
                 {/* Tarjeta inferior de stats */}

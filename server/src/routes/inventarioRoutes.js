@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const ctrl = require('../controllers/inventarioController');
-const { verifyToken } = require('../middlewares/auth');
+const { verifyToken, requireRole } = require('../middlewares/auth');
 
-router.get('/stock', verifyToken, ctrl.getStock);
-router.get('/movimientos', verifyToken, ctrl.getMovimientos);
-router.post('/ajustar', verifyToken, ctrl.ajustarStock);
+// Almacenero y Administrador gestionan inventario
+const INVENTARIO = requireRole('Administrador', 'Almacenero');
+
+router.get('/stock',       verifyToken, INVENTARIO, ctrl.getStock);
+router.get('/movimientos', verifyToken, INVENTARIO, ctrl.getMovimientos);
+router.post('/ajustar',    verifyToken, INVENTARIO, ctrl.ajustarStock);
 
 module.exports = router;

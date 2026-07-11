@@ -1,13 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const ctrl = require('../controllers/reportesController');
-const { verifyToken } = require('../middlewares/auth');
+const { verifyToken, requireRole } = require('../middlewares/auth');
 
-router.get('/ventas', verifyToken, ctrl.resumenVentas);
-router.get('/productos-vendidos', verifyToken, ctrl.productosVendidos);
-router.get('/exportar-excel', verifyToken, ctrl.exportarExcel);
-router.get('/exportar-pdf', verifyToken, ctrl.exportarPDF);
-router.get('/exportar-inventario-excel', verifyToken, ctrl.exportarInventarioExcel);
-router.get('/exportar-inventario-pdf', verifyToken, ctrl.exportarInventarioPDF);
+// Solo Administrador accede a reportes financieros
+const REPORTES = requireRole('Administrador');
+
+router.get('/ventas',                  verifyToken, REPORTES, ctrl.resumenVentas);
+router.get('/productos-vendidos',      verifyToken, REPORTES, ctrl.productosVendidos);
+router.get('/exportar-excel',          verifyToken, REPORTES, ctrl.exportarExcel);
+router.get('/exportar-pdf',            verifyToken, REPORTES, ctrl.exportarPDF);
+router.get('/exportar-inventario-excel', verifyToken, REPORTES, ctrl.exportarInventarioExcel);
+router.get('/exportar-inventario-pdf',   verifyToken, REPORTES, ctrl.exportarInventarioPDF);
 
 module.exports = router;
