@@ -2,8 +2,11 @@ import { useState, useEffect } from 'react';
 import { Plus, Eye, Truck, X, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
+import useAuthStore from '../store/authStore';
 
 export default function Compras() {
+    const { usuario } = useAuthStore();
+    const esAdmin = usuario?.rol === 'Administrador';
     const [compras, setCompras] = useState([]);
     const [proveedores, setProveedores] = useState([]);
     const [productos, setProductos] = useState([]);
@@ -52,7 +55,9 @@ export default function Compras() {
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                 <div className="page-title" style={{ marginBottom: 0 }}><Truck size={22} />Compras</div>
-                <button className="btn btn-primary" onClick={() => setModalOpen(true)}><Plus size={15} />Nueva Compra</button>
+                {esAdmin && (
+                    <button className="btn btn-primary" onClick={() => setModalOpen(true)}><Plus size={15} />Nueva Compra</button>
+                )}
             </div>
             <div className="card">
                 <div className="table-wrapper">
