@@ -12,6 +12,7 @@ export default function Productos() {
     const [categorias, setCategorias] = useState([]);
     const [proveedores, setProveedores] = useState([]);
     const [search, setSearch] = useState('');
+    const [categoriaFiltro, setCategoriaFiltro] = useState('');
     const [modalOpen, setModalOpen] = useState(false);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
@@ -34,9 +35,11 @@ export default function Productos() {
         toast.success(`Código escaneado: ${codigoEscaner}`, { icon: '🔍' });
     });
 
-    const filtered = productos.filter(p =>
-        p.nombre.toLowerCase().includes(search.toLowerCase()) || p.codigo?.includes(search)
-    );
+    const filtered = productos.filter(p => {
+        const matchSearch = p.nombre.toLowerCase().includes(search.toLowerCase()) || p.codigo?.includes(search);
+        const matchCategoria = categoriaFiltro === '' || String(p.categoria_id) === categoriaFiltro;
+        return matchSearch && matchCategoria;
+    });
 
     const openCreate = () => { setEditing(null); setForm({ codigo: '', nombre: '', descripcion: '', categoria_id: '', proveedor_id: '', precio_compra: '', precio_venta: '', stock: 0, stock_minimo: 5, unidad: 'und' }); setImageFile(null); setModalOpen(true); };
     const openEdit = (p) => { setEditing(p); setForm({ codigo: p.codigo || '', nombre: p.nombre, descripcion: p.descripcion || '', categoria_id: p.categoria_id || '', proveedor_id: p.proveedor_id || '', precio_compra: p.precio_compra, precio_venta: p.precio_venta, stock: p.stock, stock_minimo: p.stock_minimo, unidad: p.unidad }); setImageFile(null); setModalOpen(true); };
@@ -70,6 +73,17 @@ export default function Productos() {
                         <Search size={15} />
                         <input className="form-control" placeholder="Buscar por nombre o código..." value={search} onChange={e => setSearch(e.target.value)} />
                     </div>
+                    <select
+                        className="form-control"
+                        style={{ width: 180, flexShrink: 0 }}
+                        value={categoriaFiltro}
+                        onChange={e => setCategoriaFiltro(e.target.value)}
+                    >
+                        <option value="">Todas las categorías</option>
+                        {categorias.map(c => (
+                            <option key={c.id} value={String(c.id)}>{c.nombre}</option>
+                        ))}
+                    </select>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)', fontSize: 13, marginRight: 8 }}>
                         <Barcode size={18} />
                         <span style={{ display: 'none' }} className="d-sm-inline">Lector Activo</span>
