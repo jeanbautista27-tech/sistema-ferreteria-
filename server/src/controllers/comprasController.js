@@ -81,7 +81,7 @@ const create = async (req, res) => {
             await CajaEgreso.create({
                 caja_id: cajaAbierta.id,
                 usuario_id: req.user.id,
-                motivo: `Pago por Compra ${numero_orden}`,
+                concepto: `Pago por Compra ${numero_orden}`,
                 monto: total + igv
             }, { transaction: t });
         }

@@ -119,7 +119,7 @@ const create = async (req, res) => {
                 caja_id: cajaFiltro.id,
                 usuario_id: req.user.id,
                 monto: total_reembolso,
-                motivo: `Reembolso por Devolución ${numComp}`
+                concepto: `Reembolso por Devolución ${numComp}`
             }, { transaction: t });
         }
 

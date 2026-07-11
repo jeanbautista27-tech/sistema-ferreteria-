@@ -92,7 +92,7 @@ const registrarAbono = async (req, res) => {
         await CajaEgreso.create({
             caja_id: cajaAbierta.id,
             usuario_id: req.user.id,
-            motivo: `Pago al crédito (proveedor). Ref Compra: ${compraRef ? compraRef.numero_orden : 'S/N'}`,
+            concepto: `Pago al crédito (proveedor). Ref Compra: ${compraRef ? compraRef.numero_orden : 'S/N'}`,
             monto: montoAbono
         }, { transaction: t });
 
