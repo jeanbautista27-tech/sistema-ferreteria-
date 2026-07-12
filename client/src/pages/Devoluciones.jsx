@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { RotateCcw, Eye, FileText, Ban, X } from 'lucide-react';
 import api from '../api/axios';
 import useAuthStore from '../store/authStore';
+import { formatDateTime } from '../utils/formatDate';
 
 export default function Devoluciones() {
     const { usuario } = useAuthStore();
@@ -48,7 +49,7 @@ export default function Devoluciones() {
                         <tbody>
                             {devoluciones.map(d => (
                                 <tr key={d.id}>
-                                    <td>{new Date(d.createdAt).toLocaleString()}</td>
+                                    <td>{formatDateTime(d.createdAt || d.created_at)}</td>
                                     <td><strong>{d.numero_comprobante}</strong><br /><span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{d.tipo_reembolso}</span></td>
                                     <td>{d.venta?.numero_comprobante}</td>
                                     <td>{d.venta?.cliente?.nombre || 'Cliente General'}</td>
@@ -79,7 +80,7 @@ export default function Devoluciones() {
                                     <div><strong>Venta Origen:</strong><br />{detalle.venta?.numero_comprobante}</div>
                                     <div><strong>Cliente:</strong><br />{detalle.venta?.cliente ? detalle.venta.cliente.nombre : 'Cliente General'}</div>
                                     <div><strong>Tipo Reembolso:</strong><br /><span className={`badge ${detalle.tipo_reembolso === 'Efectivo' ? 'badge-warning' : 'badge-info'}`}>{detalle.tipo_reembolso}</span></div>
-                                    <div><strong>Fecha:</strong><br />{new Date(detalle.createdAt).toLocaleString()}</div>
+                                    <div><strong>Fecha:</strong><br />{formatDateTime(detalle.createdAt || detalle.created_at)}</div>
                                     <div style={{ gridColumn: 'span 4', fontSize: 12, padding: 8, background: 'var(--bg-secondary)', borderRadius: 6 }}>
                                         <strong>Motivo declarado: </strong> {detalle.motivo}
                                     </div>

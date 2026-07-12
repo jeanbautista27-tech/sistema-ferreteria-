@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { DollarSign, Plus, Minus, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
+import { formatDateTime } from '../utils/formatDate';
 
 export default function Caja() {
     const [caja, setCaja] = useState(null);
@@ -48,7 +49,7 @@ export default function Caja() {
                     {caja ? (
                         <div>
                             <p style={{ color: 'var(--text-secondary)', fontSize: 13, marginBottom: 8 }}>Abierta por: <strong>{caja.usuario?.nombre}</strong></p>
-                            <p style={{ color: 'var(--text-secondary)', fontSize: 13, marginBottom: 12 }}>Apertura: {new Date(caja.fecha_apertura).toLocaleString('es-PE')}</p>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: 13, marginBottom: 12 }}>Apertura: {formatDateTime(caja.fecha_apertura)}</p>
                             <p style={{ fontSize: 13, marginBottom: 12 }}>Monto Inicial: <strong>S/ {parseFloat(caja.monto_inicial).toFixed(2)}</strong></p>
                             <div style={{ display: 'flex', gap: 8 }}>
                                 <button className="btn btn-secondary" onClick={() => setModalMov(true)}><Plus size={14} />Movimiento</button>
@@ -92,8 +93,8 @@ export default function Caja() {
                             {historial.map(c => (
                                 <tr key={c.id}>
                                     <td>{c.usuario?.nombre}</td>
-                                    <td style={{ fontSize: 11 }}>{new Date(c.fecha_apertura).toLocaleString('es-PE')}</td>
-                                    <td style={{ fontSize: 11 }}>{c.fecha_cierre ? new Date(c.fecha_cierre).toLocaleString('es-PE') : '—'}</td>
+                                    <td style={{ fontSize: 11 }}>{formatDateTime(c.fecha_apertura)}</td>
+                                    <td style={{ fontSize: 11 }}>{c.fecha_cierre ? formatDateTime(c.fecha_cierre) : '—'}</td>
                                     <td>S/ {parseFloat(c.monto_inicial).toFixed(2)}</td>
                                     <td className="text-success">S/ {parseFloat(c.total_ventas || 0).toFixed(2)}</td>
                                     <td className="text-danger">S/ {parseFloat(c.total_egresos || 0).toFixed(2)}</td>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Warehouse, Search, Edit, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
+import { formatDateTime } from '../utils/formatDate';
 
 export default function Inventario() {
     const [productos, setProductos] = useState([]);
@@ -88,7 +89,7 @@ export default function Inventario() {
                             <tbody>
                                 {movimientos.map(m => (
                                     <tr key={m.id}>
-                                        <td style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{new Date(m.created_at).toLocaleString('es-PE')}</td>
+                                        <td style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{formatDateTime(m.created_at)}</td>
                                         <td>{m.producto?.nombre}</td>
                                         <td><span className={`badge ${tipoColor[m.tipo] || 'badge-purple'}`}>{m.tipo}</span></td>
                                         <td className={m.cantidad > 0 ? 'text-success' : 'text-danger'}>{m.cantidad > 0 ? '+' : ''}{m.cantidad}</td>

@@ -122,7 +122,10 @@ export default function Dashboard() {
 
     /* Gráfico de línea (área amarilla) */
     const lineData = {
-        labels: dashData?.tendenciaVentas?.fechas.map(f => new Date(f).toLocaleDateString('es-PE', { day: 'numeric', month: 'short', timeZone: 'UTC' })) || ['L', 'M', 'X', 'J', 'V', 'S', 'D'],
+        labels: dashData?.tendenciaVentas?.fechas.map(f => {
+            const d = new Date(String(f).replace(' ', 'T') + (String(f).length === 10 ? 'T00:00:00' : ''));
+            return isNaN(d.getTime()) ? f : d.toLocaleDateString('es-PE', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+        }) || ['L', 'M', 'X', 'J', 'V', 'S', 'D'],
         datasets: [{
             label: 'Ventas S/',
             data: dashData?.tendenciaVentas?.totales || [0, 0, 0, 0, 0, 0, 0],
@@ -143,7 +146,10 @@ export default function Dashboard() {
     };
 
     /* Gráfico de barras verde (derecha arriba) */
-    const compFechasFormat = dashData?.comparativa6Dias?.fechas.map(f => new Date(f).toLocaleDateString('es-PE', { day: 'numeric', month: 'numeric', timeZone: 'UTC' })) || [];
+    const compFechasFormat = dashData?.comparativa6Dias?.fechas.map(f => {
+        const d = new Date(String(f).replace(' ', 'T') + (String(f).length === 10 ? 'T00:00:00' : ''));
+        return isNaN(d.getTime()) ? f : d.toLocaleDateString('es-PE', { day: 'numeric', month: 'numeric', timeZone: 'UTC' });
+    }) || [];
 
     const barGreenData = {
         labels: compFechasFormat,
@@ -328,7 +334,7 @@ export default function Dashboard() {
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ fontSize: 11.5, color: '#6b7280', lineHeight: 1.3 }}>
                                         {v.cliente?.nombre || 'Cliente general'}
-                                        <div style={{ fontSize: 9, opacity: 0.6 }}>{new Date(v.created_at).toLocaleString('es-PE')}</div>
+                                        <div style={{ fontSize: 9, opacity: 0.6 }}>{v.created_at ? new Date(String(v.created_at).replace(' ', 'T')).toLocaleString('es-PE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—'}</div>
                                     </div>
                                 </div>
                                 <span style={{ fontSize: 16, fontWeight: 800, color: '#1e1b4b', flexShrink: 0 }}>

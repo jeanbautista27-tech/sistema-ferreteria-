@@ -4,7 +4,8 @@ const TicketCotizacion = forwardRef(({ cotizacion, empresa }, ref) => {
     if (!cotizacion) return null;
 
     const fMoneda = (val) => Number(val || 0).toFixed(2);
-    const fecha = cotizacion.created_at ? new Date(cotizacion.created_at).toLocaleString('es-PE') : new Date().toLocaleString('es-PE');
+    const fFecha = (v) => v ? new Date(String(v).replace(' ', 'T')).toLocaleString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleString('es-PE');
+    const fecha = fFecha(cotizacion.created_at);
 
     return (
         <div ref={ref} className="print-ticket" style={{

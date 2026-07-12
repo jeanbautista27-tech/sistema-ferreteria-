@@ -5,8 +5,8 @@ const TicketVenta = forwardRef(({ venta, empresa }, ref) => {
 
     // Helper: formato moneda
     const fMoneda = (val) => Number(val || 0).toFixed(2);
-    // Formato fecha simple DD/MM/YYYY HH:mm
-    const fecha = venta.created_at ? new Date(venta.created_at).toLocaleString('es-PE') : new Date().toLocaleString('es-PE');
+    const fFecha = (v) => v ? new Date(String(v).replace(' ', 'T')).toLocaleString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleString('es-PE');
+    const fecha = fFecha(venta.created_at);
 
     return (
         <div ref={ref} className="print-ticket" style={{

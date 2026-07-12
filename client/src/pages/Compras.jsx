@@ -3,6 +3,7 @@ import { Plus, Eye, Truck, X, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
 import useAuthStore from '../store/authStore';
+import { formatDate } from '../utils/formatDate';
 
 export default function Compras() {
     const { usuario } = useAuthStore();
@@ -71,7 +72,7 @@ export default function Compras() {
                                     <td><strong>S/ {parseFloat(c.total).toFixed(2)}</strong></td>
                                     <td><span className={`badge ${c.tipo_pago === 'Crédito' ? 'badge-warning' : 'badge-info'}`}>{c.tipo_pago || 'Efectivo'}</span></td>
                                     <td><span className={`badge ${estadoBadge[c.estado]}`}>{c.estado}</span></td>
-                                    <td style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{new Date(c.created_at).toLocaleDateString('es-PE')}</td>
+                                    <td style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{formatDate(c.created_at)}</td>
                                     <td style={{ display: 'flex', gap: 6 }}>
                                         <button className="btn-icon view" onClick={() => verDetalle(c.id)}><Eye size={14} /></button>
                                         {c.estado === 'Pendiente' && <button className="btn-icon" style={{ background: 'rgba(34,197,94,0.12)', color: '#4ade80' }} onClick={() => recibirCompra(c.id)} title="Marcar como Recibida"><CheckCircle size={14} /></button>}

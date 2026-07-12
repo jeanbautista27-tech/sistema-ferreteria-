@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { CreditCard, Eye, Plus, FileText, CheckCircle, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
+import { formatDateTime } from '../utils/formatDate';
 
 export default function CuentasPagar() {
     const [cuentas, setCuentas] = useState([]);
@@ -192,7 +193,7 @@ export default function CuentasPagar() {
                                         <tbody>
                                             {detalle.abonos.map(ab => (
                                                 <tr key={ab.id}>
-                                                    <td style={{ fontSize: 12 }}>{new Date(ab.created_at).toLocaleString('es-PE')}</td>
+                                                    <td style={{ fontSize: 12 }}>{formatDateTime(ab.created_at)}</td>
                                                     <td>{ab.usuario?.nombre}</td>
                                                     <td>{ab.metodo_pago}</td>
                                                     <td>{ab.referencia || '-'}</td>

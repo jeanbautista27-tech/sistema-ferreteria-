@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FileText, Search } from 'lucide-react';
 import api from '../api/axios';
+import { formatDateTime } from '../utils/formatDate';
 
 export default function Logs() {
     const [logs, setLogs] = useState([]);
@@ -37,7 +38,7 @@ export default function Logs() {
                         <tbody>
                             {filtered.map(l => (
                                 <tr key={l.id}>
-                                    <td style={{ fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{new Date(l.created_at).toLocaleString('es-PE')}</td>
+                                    <td style={{ fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{formatDateTime(l.created_at)}</td>
                                     <td>{l.usuario?.nombre || '—'}</td>
                                     <td><span className={`badge ${accionColor[l.accion] || 'badge-purple'}`}>{l.accion}</span></td>
                                     <td style={{ color: 'var(--text-secondary)' }}>{l.tabla_afectada || '—'}</td>

@@ -6,6 +6,7 @@ import api from '../api/axios';
 import ConfirmModal from '../components/ui/ConfirmModal';
 import TicketCotizacion from '../components/ventas/TicketCotizacion';
 import { createPortal } from 'react-dom';
+import { formatDateTime } from '../utils/formatDate';
 
 export default function Cotizaciones() {
     const navigate = useNavigate();
@@ -76,7 +77,7 @@ export default function Cotizaciones() {
                                     <td>{c.cliente?.nombre || 'Cliente General'}</td>
                                     <td>{c.usuario?.nombre}</td>
                                     <td><span className={`badge ${estadoBadge[c.estado]}`}>{c.estado}</span></td>
-                                    <td style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{new Date(c.created_at).toLocaleString('es-PE')}</td>
+                                    <td style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{formatDateTime(c.created_at)}</td>
                                     <td><strong>S/ {parseFloat(c.total).toFixed(2)}</strong></td>
                                     <td style={{ display: 'flex', gap: 6 }}>
                                         <button className="btn-icon view" onClick={() => verDetalle(c.id)} title="Ver en detalle"><Eye size={14} /></button>
@@ -105,7 +106,7 @@ export default function Cotizaciones() {
                         <div className="modal-body">
                             <div className="form-row" style={{ marginBottom: 12 }}>
                                 <div><div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Cliente</div><div style={{ fontWeight: 600 }}>{detalle.cliente?.nombre || 'General'}</div></div>
-                                <div><div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Fecha</div><div>{new Date(detalle.created_at).toLocaleString('es-PE')}</div></div>
+                                <div><div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Fecha</div><div>{formatDateTime(detalle.created_at)}</div></div>
                                 <div><div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Estado</div><div><span className={`badge ${estadoBadge[detalle.estado]}`}>{detalle.estado}</span></div></div>
                                 <div><div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Validez</div><div>{detalle.validez_dias} Días</div></div>
                             </div>
