@@ -14,6 +14,7 @@
  */
 export const formatDateTime = (value) => {
     if (!value) return '—';
+    // Maneja tanto "2026-07-08 15:30:00" (MySQL) como "2026-07-08T15:30:00Z" (ISO)
     const d = new Date(String(value).replace(' ', 'T'));
     if (isNaN(d.getTime())) return '—';
     return d.toLocaleString('es-PE', {
