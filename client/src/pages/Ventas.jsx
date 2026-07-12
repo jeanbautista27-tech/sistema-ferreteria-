@@ -6,6 +6,7 @@ import api from '../api/axios';
 import ConfirmModal from '../components/ui/ConfirmModal';
 import TicketVenta from '../components/ventas/TicketVenta';
 import useAuthStore from '../store/authStore';
+import { formatDateTime } from '../utils/formatDate';
 
 export default function Ventas() {
     const { usuario } = useAuthStore();
@@ -126,7 +127,7 @@ export default function Ventas() {
                                     <td><strong>S/ {parseFloat(v.total).toFixed(2)}</strong></td>
                                     <td>{v.tipo_pago}</td>
                                     <td><span className={`badge ${estadoBadge[v.estado]}`}>{v.estado}</span></td>
-                                    <td style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{new Date(v.created_at).toLocaleString('es-PE')}</td>
+                                    <td style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{formatDateTime(v.created_at)}</td>
                                     <td style={{ display: 'flex', gap: 6 }}>
                                         <button className="btn-icon view" onClick={() => verDetalle(v.id)}><Eye size={14} /></button>
                                         {v.estado === 'Completada' && <button className="btn-icon del" onClick={() => { setSelectedId(v.id); setConfirmOpen(true); }}><Ban size={14} /></button>}
@@ -148,7 +149,7 @@ export default function Ventas() {
                         <div className="modal-body">
                             <div className="form-row" style={{ marginBottom: 12 }}>
                                 <div><div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Cliente</div><div style={{ fontWeight: 600 }}>{detalle.cliente?.nombre || 'General'}</div></div>
-                                <div><div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Fecha</div><div>{new Date(detalle.created_at).toLocaleString('es-PE')}</div></div>
+                                <div><div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Fecha</div><div>{formatDateTime(detalle.created_at)}</div></div>
                                 <div><div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Tipo Pago</div><div>{detalle.tipo_pago}</div></div>
                             </div>
                             <div className="table-wrapper">
