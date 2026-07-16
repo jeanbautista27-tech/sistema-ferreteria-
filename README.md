@@ -41,6 +41,9 @@ Digitalizar y centralizar los procesos comerciales de una ferretería, eliminand
 | Multer | 1.4.5 | Carga de archivos (logo, imágenes) |
 | ExcelJS | 4.4.0 | Exportación de reportes en Excel |
 | PDFKit | 0.15.0 | Generación de reportes en PDF |
+| helmet | 8.0.0 | Cabeceras HTTP de seguridad |
+| compression | 1.7.4 | Compresión gzip de respuestas |
+| express-rate-limit | 7.4.1 | Protección anti fuerza bruta en login |
 | express-validator | 7.1.0 | Validación de entradas |
 | dotenv | 16.4.5 | Variables de entorno |
 
@@ -68,6 +71,44 @@ Digitalizar y centralizar los procesos comerciales de una ferretería, eliminand
 
 ---
 
+## Roles y control de acceso
+
+El sistema implementa tres roles con acceso diferenciado a los módulos:
+
+| Módulo | Administrador | Almacenero | Cajero |
+| --- | --- | --- | --- |
+| Dashboard | ✅ | ✅ | ✅ |
+| Punto de Venta | ✅ | ❌ | ✅ |
+| Ventas | ✅ | ❌ | ✅ |
+| Cotizaciones | ✅ | ❌ | ✅ |
+| Devoluciones | ✅ | ❌ | ✅ |
+| Clientes | ✅ | ❌ | ✅ |
+| Caja | ✅ | ❌ | ✅ |
+| Cuentas por Cobrar | ✅ | ❌ | ✅ |
+| Productos | ✅ | ✅ | ❌ |
+| Categorías | ✅ | ✅ | ❌ |
+| Inventario | ✅ | ✅ | ❌ |
+| Compras (registrar) | ✅ | ❌ | ❌ |
+| Compras (recibir) | ✅ | ✅ | ❌ |
+| Proveedores | ✅ | ✅ | ❌ |
+| Cuentas por Pagar | ✅ | ❌ | ❌ |
+| Reportes | ✅ | ❌ | ❌ |
+| Usuarios | ✅ | ❌ | ❌ |
+| Configuración | ✅ | ❌ | ❌ |
+| Mantenimiento | ✅ | ❌ | ❌ |
+
+### Credenciales de acceso por defecto
+
+| Email | Contraseña | Rol |
+| --- | --- | --- |
+| `admin@ferreteria.com` | `admin123` | Administrador |
+| `almacenero@ferreteria.com` | `almacenero123` | Almacenero |
+| `cajero@ferreteria.com` | `cajero123` | Cajero |
+
+> Las contraseñas deben cambiarse en el primer inicio de sesión en producción.
+
+---
+
 ## Arquitectura del proyecto
 
 El sistema sigue una arquitectura **cliente-servidor desacoplada (SPA + REST API)**:
@@ -86,23 +127,23 @@ El sistema sigue una arquitectura **cliente-servidor desacoplada (SPA + REST API
 ┌─────────────────────────────────────────────────────┐
 │               SERVIDOR (Express)                    │
 │         http://localhost:3002                       │
-│  ┌────────────┐  ┌─────────────┐  ┌─────────────┐  │
-│  │   Routes   │→ │ Controllers │→ │   Models    │  │
-│  │ /api/*     │  │  (lógica)   │  │ (Sequelize) │  │
-│  └────────────┘  └─────────────┘  └─────────────┘  │
 │  ┌──────────────────────────────────────────────┐   │
-│  │        Middlewares (JWT, Multer, CORS)        │   │
+│  │  helmet · compression · rate-limit · CORS    │   │
 │  └──────────────────────────────────────────────┘   │
+│  ┌────────────┐  ┌─────────────┐  ┌─────────────┐  │
+│  │   Routes   │→ │ verifyToken │→ │ Controllers │  │
+│  │ /api/*     │  │ requireRole │  │  (lógica)   │  │
+│  └────────────┘  └─────────────┘  └─────────────┘  │
 └──────────────────────┬──────────────────────────────┘
                        │ Sequelize ORM
                        ▼
 ┌─────────────────────────────────────────────────────┐
 │              BASE DE DATOS (MySQL)                  │
-│               ferreteria_db                         │
+│               ferreteria_db / railway               │
 └─────────────────────────────────────────────────────┘
 ```
 
-**Flujo de autenticación:** El cliente obtiene un JWT en el login y lo envía en el header `Authorization: Bearer <token>` en cada petición. El middleware `verifyToken` valida el token antes de llegar a cualquier controlador.
+**Flujo de autenticación:** El cliente obtiene un JWT en el login y lo envía en el header `Authorization: Bearer <token>` en cada petición. Los middlewares `verifyToken` y `requireRole` controlan el acceso por rol antes de llegar a cualquier controlador.
 
 ---
 
@@ -114,25 +155,25 @@ sistema-ferreteria/
 ├── client/                         # Frontend React + Vite
 │   ├── src/
 │   │   ├── api/
-│   │   │   └── axios.js            # Instancia configurada de Axios
+│   │   │   └── axios.js            # Instancia Axios con interceptores JWT
 │   │   ├── components/
 │   │   │   ├── layout/
 │   │   │   │   ├── MainLayout.jsx  # Layout principal con sidebar
-│   │   │   │   └── Sidebar.jsx     # Navegación lateral
+│   │   │   │   └── Sidebar.jsx     # Navegación filtrada por rol
 │   │   │   ├── ui/
 │   │   │   │   └── ConfirmModal.jsx
 │   │   │   └── ventas/
 │   │   │       ├── TicketVenta.jsx
 │   │   │       └── TicketCotizacion.jsx
 │   │   ├── hooks/
-│   │   │   └── useBarcodeScanner.js # Hook para lectura de código de barras
+│   │   │   └── useBarcodeScanner.js # Hook para lector de código de barras
 │   │   ├── pages/                  # Una página por módulo del sistema
 │   │   │   ├── Login.jsx
 │   │   │   ├── Dashboard.jsx
 │   │   │   ├── POS.jsx
 │   │   │   ├── Ventas.jsx
-│   │   │   ├── Compras.jsx
-│   │   │   ├── Productos.jsx
+│   │   │   ├── Compras.jsx         # Nueva Compra solo visible para Administrador
+│   │   │   ├── Productos.jsx       # Incluye filtro por categoría
 │   │   │   ├── Inventario.jsx
 │   │   │   ├── Caja.jsx
 │   │   │   ├── Clientes.jsx
@@ -151,54 +192,62 @@ sistema-ferreteria/
 │   │   │   └── ProtectedRoute.jsx  # Guard de rutas autenticadas
 │   │   ├── store/
 │   │   │   └── authStore.js        # Estado global de autenticación (Zustand)
+│   │   ├── utils/
+│   │   │   └── formatDate.js       # Utilidad centralizada para fechas MySQL
 │   │   ├── App.jsx
 │   │   └── main.jsx
 │   ├── index.html
-│   ├── vite.config.js
+│   ├── vite.config.js              # Proxy dinámico con VITE_API_URL
+│   ├── .env.example                # Plantilla de variables de entorno
 │   └── package.json
 │
 ├── server/                         # Backend Node.js + Express
 │   ├── src/
-│   │   ├── app.js                  # Punto de entrada, rutas y arranque
+│   │   ├── app.js                  # Punto de entrada con helmet, compression, rate-limit
 │   │   ├── config/
-│   │   │   └── db.js               # Conexión Sequelize a MySQL
-│   │   ├── controllers/            # Lógica de negocio por módulo (19 controllers)
+│   │   │   └── db.js               # Sequelize con DB_PORT dinámico y SSL opcional
+│   │   ├── controllers/            # 19 controllers con lógica de negocio
 │   │   ├── middlewares/
-│   │   │   └── auth.js             # verifyToken + requireAdmin
-│   │   ├── models/                 # Modelos Sequelize (24 modelos + index)
-│   │   └── routes/                 # Definición de endpoints REST (19 archivos)
+│   │   │   └── auth.js             # verifyToken + requireAdmin + requireRole
+│   │   ├── models/                 # 24 modelos Sequelize + index con asociaciones
+│   │   └── routes/                 # 19 rutas con control de acceso por rol
 │   ├── tests/
-│   │   ├── controllers/            # Pruebas unitarias (17 archivos)
+│   │   ├── controllers/            # 17 archivos de pruebas unitarias
 │   │   ├── middlewares/
-│   │   │   └── auth.test.js        # Pruebas del middleware JWT
-│   │   └── integration/            # Pruebas de integración (4 archivos)
+│   │   │   └── auth.test.js        # Pruebas de verifyToken y requireAdmin
+│   │   └── integration/            # 4 archivos de pruebas de integración
 │   │       └── setup/
 │   │           ├── app-test.js     # Express sin listen para Supertest
 │   │           └── tokenHelper.js  # Generador de tokens JWT para tests
 │   ├── coverage/                   # Reportes de cobertura (generado por Jest)
 │   ├── uploads/                    # Archivos subidos (imágenes, logo)
+│   ├── ecosystem.config.js         # Configuración PM2 para producción
 │   ├── .env                        # Variables de entorno (no commitear)
+│   ├── .env.example                # Plantilla de variables de entorno
+│   ├── railway.json                # Configuración de despliegue en Railway
 │   ├── jest.config.js
 │   └── package.json
 │
 ├── database/
 │   ├── ferreteria_db.sql           # Schema completo de la base de datos
-│   ├── datos_base.sql              # Datos base del sistema (roles, config)
+│   ├── ferreteria_db_railway.sql   # Schema limpio para Railway (sin CREATE DB)
+│   ├── tablas_faltantes.sql        # Tablas adicionales para Railway
+│   ├── datos_base.sql              # Datos base (roles, configuración, productos)
 │   └── datos_prueba.sql            # Datos de ejemplo para desarrollo
 │
 ├── scripts/
-│   ├── 1_Instalar_Dependencias.bat # Instala npm en server y client
-│   ├── 2_Configurar_Base_Datos.bat # Importa el schema MySQL
-│   └── 3_Iniciar_Sistema.bat       # Levanta backend y frontend
+│   ├── 1_Instalar_Dependencias.bat
+│   ├── 2_Configurar_Base_Datos.bat
+│   └── 3_Iniciar_Sistema.bat
 │
+├── package.json                    # package.json raíz para Railway
+├── nixpacks.toml                   # Configuración de build para Railway (si aplica)
 └── README.md
 ```
 
 ---
 
 ## Requisitos previos
-
-Antes de instalar el proyecto, asegúrate de tener instalado:
 
 | Requisito | Versión mínima | Verificar con |
 | --- | --- | --- |
@@ -216,30 +265,19 @@ Antes de instalar el proyecto, asegúrate de tener instalado:
 ### Opción A — Scripts automáticos (Windows)
 
 ```bat
-# 1. Instalar dependencias de server y client
 scripts\1_Instalar_Dependencias.bat
-
-# 2. Importar la base de datos
 scripts\2_Configurar_Base_Datos.bat
-
-# 3. Iniciar el sistema completo
 scripts\3_Iniciar_Sistema.bat
 ```
 
 ### Opción B — Instalación manual
 
 ```bash
-# Clonar el repositorio
-git clone <url-del-repositorio>
+git clone https://github.com/jeanbautista27-tech/sistema-ferreteria-.git
 cd sistema-ferreteria
 
-# Instalar dependencias del backend
-cd server
-npm install
-
-# Instalar dependencias del frontend
-cd ../client
-npm install
+cd server && npm install
+cd ../client && npm install
 ```
 
 ---
@@ -247,58 +285,62 @@ npm install
 ## Configuración de la base de datos MySQL
 
 ```sql
--- Crear la base de datos
 CREATE DATABASE ferreteria_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- Importar el schema y datos base
 mysql -u root -p ferreteria_db < database/ferreteria_db.sql
 mysql -u root -p ferreteria_db < database/datos_base.sql
 
--- Opcional: cargar datos de prueba para desarrollo
+-- Opcional: datos de prueba para desarrollo
 mysql -u root -p ferreteria_db < database/datos_prueba.sql
 ```
-
-**Credenciales de acceso por defecto** (generadas por `datos_base.sql`):
-
-- Usuario: `admin@ferreteria.com`
-- Contraseña: `admin123`
 
 ---
 
 ## Variables de entorno requeridas
 
-Crear el archivo `server/.env` con las siguientes variables:
+Copiar `server/.env.example` a `server/.env` y completar:
 
 ```env
 # Servidor
 PORT=3002
+NODE_ENV=production
 
 # Base de datos MySQL
 DB_HOST=localhost
+DB_PORT=3306
 DB_USER=<usuario_mysql>
 DB_PASSWORD=<contraseña_mysql>
 DB_NAME=ferreteria_db
 DB_DIALECT=mysql
+DB_SSL=false
 
 # Autenticación JWT
-JWT_SECRET=<clave_secreta_segura>
+JWT_SECRET=<clave_aleatoria_64_caracteres>
 JWT_EXPIRES_IN=8h
+
+# CORS — URL del frontend desplegado
+FRONTEND_URL=http://localhost:5173
+
+# Rate limiting
+LOGIN_RATE_LIMIT_MAX=10
 ```
 
-> **Importante:** nunca commitear el archivo `.env` con credenciales reales. El archivo ya está incluido en `.gitignore`.
+Copiar `client/.env.example` a `client/.env.production`:
+
+```env
+# URL base del backend desplegado (sin /api al final)
+VITE_API_URL=https://api.tudominio.com
+```
+
+> Generar JWT_SECRET seguro: `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`
 
 ---
 
 ## Instalación de dependencias
 
 ```bash
-# Backend
-cd server
-npm install
-
-# Frontend
-cd client
-npm install
+cd server && npm install
+cd ../client && npm install
 ```
 
 ---
@@ -308,20 +350,14 @@ npm install
 ```bash
 cd server
 
+# Desarrollo (recarga automática)
+npm run dev
+
 # Producción
 npm start
-
-# Desarrollo (con recarga automática)
-npm run dev
 ```
 
-El servidor quedará disponible en: `http://localhost:3002`
-
-Endpoint de verificación:
-
-```text
-GET http://localhost:3002/api/health
-```
+Endpoint de verificación: `GET http://localhost:3002/api/health`
 
 ---
 
@@ -332,49 +368,39 @@ cd client
 npm run dev
 ```
 
-La aplicación quedará disponible en: `http://localhost:5173`
-
-El proxy de Vite redirige automáticamente `/api/*` y `/uploads/*` al servidor en el puerto `3002`.
+Disponible en: `http://localhost:5173`
 
 ---
 
 ## Ejecución de las pruebas unitarias
 
-Las pruebas unitarias se ubican en `server/tests/controllers/` y `server/tests/middlewares/`. Utilizan Jest con mocks de Sequelize, sin conexión real a la base de datos.
-
 ```bash
 cd server
 
-# Ejecutar todas las pruebas
+# Todas las pruebas
 npm test
 
-# Ejecutar en modo watch (re-ejecuta al guardar)
+# Modo watch
 npm run test:watch
 ```
 
-**Cobertura actual:** 17 controllers + 1 middleware cubiertos, ~175 casos de prueba.
+**290 pruebas aprobadas** — 17 controllers + 1 middleware + 4 suites de integración.
 
 ---
 
 ## Ejecución de las pruebas de integración
 
-Las pruebas de integración se ubican en `server/tests/integration/`. Utilizan Jest + Supertest para ejercitar la capa HTTP completa (rutas → middleware → controller) con mocks de modelos, sin conexión real a la base de datos.
-
 ```bash
 cd server
-
-# Ejecutar solo las pruebas de integración
 npx jest --testPathPatterns="integration" --no-coverage --verbose
 ```
 
-**Suites disponibles:**
-
-| Archivo | Proceso cubierto | Tests |
+| Suite | Proceso cubierto | Tests |
 | --- | --- | --- |
-| `auth.integration.test.js` | Login y protección de rutas JWT | 11 |
-| `ventas.integration.test.js` | Registro de ventas, anulación y stock | 16 |
-| `compras.integration.test.js` | Órdenes de compra y recepción de mercancía | 16 |
-| `productos.integration.test.js` | CRUD completo del catálogo de productos | 12 |
+| `auth.integration.test.js` | Login y protección JWT | 11 |
+| `ventas.integration.test.js` | Registro, anulación, stock | 16 |
+| `compras.integration.test.js` | Órdenes de compra, recepción | 16 |
+| `productos.integration.test.js` | CRUD completo del catálogo | 12 |
 
 ---
 
@@ -383,17 +409,8 @@ npx jest --testPathPatterns="integration" --no-coverage --verbose
 ```bash
 cd server
 npm run coverage
+# Reporte HTML: server/coverage/lcov-report/index.html
 ```
-
-El reporte se genera en `server/coverage/`. Para verlo en el navegador:
-
-```bash
-# Abrir el reporte HTML
-start server/coverage/lcov-report/index.html   # Windows
-open server/coverage/lcov-report/index.html    # macOS/Linux
-```
-
-La configuración en `jest.config.js` recolecta cobertura de `src/**/*.js` excluyendo `src/app.js`.
 
 ---
 
@@ -401,90 +418,46 @@ La configuración en `jest.config.js` recolecta cobertura de `src/**/*.js` exclu
 
 | Módulo | Ruta frontend | Endpoint API | Descripción |
 | --- | --- | --- | --- |
-| **Autenticación** | `/login` | `/api/auth` | Login con JWT, control de sesión |
-| **Dashboard** | `/dashboard` | `/api/dashboard` | KPIs, gráficos de tendencia y stock crítico |
-| **Punto de Venta (POS)** | `/pos` | `/api/ventas` | Venta rápida con lector de código de barras |
-| **Ventas** | `/ventas` | `/api/ventas` | Registro, consulta y anulación de ventas |
-| **Compras** | `/compras` | `/api/compras` | Órdenes de compra y recepción de mercancía |
-| **Productos** | `/productos` | `/api/productos` | Catálogo con imágenes, precios y stock |
+| **Autenticación** | `/login` | `/api/auth` | Login con JWT, 3 roles |
+| **Dashboard** | `/` | `/api/dashboard` | KPIs, gráficos, stock crítico |
+| **Punto de Venta** | `/pos` | `/api/ventas` | POS con lector de barras |
+| **Ventas** | `/ventas` | `/api/ventas` | Historial, anulación, devoluciones |
+| **Compras** | `/compras` | `/api/compras` | Órdenes (Admin) y recepción (Almacenero) |
+| **Productos** | `/productos` | `/api/productos` | Catálogo con filtro por categoría |
 | **Inventario** | `/inventario` | `/api/inventario` | Ajuste de stock y movimientos |
-| **Caja** | `/caja` | `/api/caja` | Apertura, cierre y movimientos de caja |
+| **Caja** | `/caja` | `/api/caja` | Apertura, cierre, movimientos |
 | **Clientes** | `/clientes` | `/api/clientes` | Gestión de clientes |
 | **Proveedores** | `/proveedores` | `/api/proveedores` | Gestión de proveedores |
 | **Categorías** | `/categorias` | `/api/categorias` | Clasificación de productos |
-| **Cotizaciones** | `/cotizaciones` | `/api/cotizaciones` | Proformas con validez configurable |
-| **Cuentas por Cobrar** | `/cuentas-cobrar` | `/api/cuentas-cobrar` | Seguimiento de ventas al crédito y abonos |
-| **Cuentas por Pagar** | `/cuentas-pagar` | `/api/cuentas-pagar` | Seguimiento de compras al crédito y pagos |
-| **Devoluciones** | `/devoluciones` | `/api/devoluciones` | Notas de crédito y reembolsos |
-| **Reportes** | `/reportes` | `/api/reportes` | Exportación en Excel y PDF |
-| **Usuarios** | `/usuarios` | `/api/usuarios` | Gestión de usuarios y roles |
-| **Configuración** | `/configuracion` | `/api/configuracion` | Datos de la empresa, IGV, series |
-| **Logs** | `/logs` | `/api/logs` | Auditoría de acciones del sistema |
+| **Cotizaciones** | `/cotizaciones` | `/api/cotizaciones` | Proformas con número PROF-XXXXXX |
+| **Cuentas por Cobrar** | `/cuentas-cobrar` | `/api/cuentas-cobrar` | Ventas al crédito y abonos |
+| **Cuentas por Pagar** | `/cuentas-pagar` | `/api/cuentas-pagar` | Deudas a proveedores y pagos |
+| **Devoluciones** | `/devoluciones` | `/api/devoluciones` | Notas de crédito NC001-XXXXXX |
+| **Reportes** | `/reportes` | `/api/reportes` | Excel y PDF (ventas e inventario) |
+| **Usuarios** | `/usuarios` | `/api/usuarios` | Gestión con roles |
+| **Configuración** | `/configuracion` | `/api/configuracion` | Empresa, IGV, series |
+| **Logs** | `/logs` | `/api/logs` | Auditoría de acciones |
 | **Mantenimiento** | `/mantenimiento` | `/api/mantenimiento` | Herramientas de administración |
-
-### Modelos de base de datos
-
-El sistema cuenta con **24 modelos Sequelize**:
-
-`Usuario` · `Rol` · `Producto` · `Categoria` · `Proveedor` · `Cliente` · `Venta` · `DetalleVenta` · `Compra` · `DetalleCompra` · `Cotizacion` · `DetalleCotizacion` · `Devolucion` · `DetalleDevolucion` · `InventarioMovimiento` · `Caja` · `CajaEgreso` · `CuentaCobrar` · `AbonoCuenta` · `CuentaPagar` · `AbonoPagar` · `Configuracion` · `AuditLog`
 
 ---
 
 ## Calidad del software
 
-El proyecto aplica una estrategia de pruebas en dos niveles que cubre desde la lógica interna de cada función hasta el flujo HTTP completo, siguiendo el enfoque **Specification-Driven Development (SDD)**: las pruebas se definen a partir del comportamiento esperado del sistema antes de validar la implementación.
-
 ### Resumen de pruebas
 
 | Tipo | Archivos | Pruebas aprobadas | Herramientas |
 | --- | --- | --- | --- |
-| Pruebas unitarias | 18 archivos (17 controllers + 1 middleware) | **235 ✔** | Jest + jest.mock() |
-| Pruebas de integración | 4 archivos (auth, ventas, compras, productos) | **55 ✔** | Jest + Supertest |
+| Pruebas unitarias | 18 (17 controllers + 1 middleware) | **235 ✔** | Jest + jest.mock() |
+| Pruebas de integración | 4 suites | **55 ✔** | Jest + Supertest |
 | **Total** | **22 archivos** | **290 ✔** | |
-
-### Pruebas unitarias — 235 aprobadas
-
-Cubren cada función de los controllers y el middleware de autenticación de forma aislada, sin conexión real a la base de datos. Los modelos Sequelize se reemplazan por mocks con `jest.mock()`.
-
-**Controladores cubiertos:** `authController` · `productosController` · `ventasController` · `comprasController` · `clientesController` · `categoriasController` · `proveedoresController` · `usuariosController` · `inventarioController` · `cajaController` · `dashboardController` · `reportesController` · `configuracionController` · `devolucionesController` · `cotizacionesController` · `cuentasCobrarController` · `cuentasPagarController`
-
-**Middleware cubierto:** `auth.js` — `verifyToken` y `requireAdmin`
-
-**Escenarios cubiertos por cada módulo:**
-
-- Respuesta exitosa (200 / 201)
-- Validaciones de entrada (400)
-- Recurso no encontrado (404)
-- Acceso no autorizado (401 / 403)
-- Error interno del servidor (500)
-- Rollback de transacciones ante fallos
-- Soft delete (`activo: 0`)
-- Hash de contraseñas y generación de tokens JWT
-
-### Pruebas de integración — 55 aprobadas
-
-Ejercitan la capa HTTP completa: `petición HTTP → ruta → middleware JWT → controller → respuesta`. Se usa `Supertest` con una instancia Express sin `listen` ni conexión real a BD.
-
-| Suite | Proceso de negocio cubierto | Tests |
-| --- | --- | --- |
-| `auth.integration.test.js` | Login, tokens, rutas protegidas | 11 |
-| `ventas.integration.test.js` | Registro de ventas, anulación, reversión de stock | 16 |
-| `compras.integration.test.js` | Órdenes de compra, recepción de mercancía | 16 |
-| `productos.integration.test.js` | CRUD completo del catálogo | 12 |
-
-### Cobertura de código
-
-La cobertura se genera automáticamente con Jest sobre todo el código en `src/**/*.js` (excluyendo `src/app.js`) y se reporta en cuatro métricas: **Statements**, **Branches**, **Functions** y **Lines**.
-
-```bash
-cd server
-npm run coverage
-# Reporte HTML disponible en: server/coverage/lcov-report/index.html
-```
 
 ### Specification-Driven Development (SDD)
 
-El desarrollo del sistema siguió el enfoque SDD: cada módulo se especificó primero en términos de comportamiento esperado (entradas, salidas, casos de error y reglas de negocio) antes de validar su implementación mediante pruebas. Esto garantiza que las pruebas documentan el contrato del sistema y no solo verifican código existente.
+Las pruebas se definen a partir del comportamiento esperado antes de validar la implementación. Cada módulo especifica entradas, salidas, casos de error y reglas de negocio como contrato verificable.
+
+### Cobertura de controllers críticos
+
+Los controllers de negocio principal tienen cobertura **≥ 90%** en statements, branches, functions y lines según el reporte de Jest.
 
 ---
 
@@ -492,207 +465,113 @@ El desarrollo del sistema siguió el enfoque SDD: cada módulo se especificó pr
 
 ### Código
 
-- Toda la lógica de negocio va en los **controllers**; las rutas solo enrutan.
+- Toda la lógica de negocio va en los **controllers**; las rutas solo enrutan y aplican middlewares.
 - Usar `async/await` con bloques `try/catch` en todos los controllers.
-- Las operaciones que afectan múltiples tablas deben usar **transacciones Sequelize** (`sequelize.transaction()`). Si ocurre un error, llamar `t.rollback()` en el `catch`.
-- Los `return res.status(4xx).json(...)` dentro de un bloque `try` **no activan el `catch`** y, por tanto, no llaman `rollback`. Esto es intencional y correcto.
+- Las operaciones multitabla deben usar **transacciones Sequelize**. En el `catch`, llamar `t.rollback()`.
+- Un `return res.status(4xx).json(...)` dentro del `try` **no activa el `catch`** — no llama `rollback`. Es intencional.
+
+### Control de acceso
+
+- `verifyToken` — protege todas las rutas autenticadas.
+- `requireAdmin` — solo para gestión de usuarios.
+- `requireRole(...roles)` — control granular por módulo y acción.
+- El Sidebar filtra los módulos según `usuario.rol` — el Cajero no ve módulos de Almacenero y viceversa.
+
+### Fechas desde MySQL
+
+MySQL devuelve fechas con espacio (`"2026-07-08 15:30:00"`) en lugar del formato ISO (`T`). Usar siempre `formatDateTime()` o `formatDate()` de `client/src/utils/formatDate.js` — nunca `new Date(value)` directamente.
 
 ### Seguridad
 
-- Nunca almacenar contraseñas en texto plano: usar `bcryptjs.hash()` siempre.
-- Proteger todas las rutas que requieran autenticación con el middleware `verifyToken`.
-- Proteger las rutas de administración con `requireAdmin`.
-- No exponer el `JWT_SECRET` ni credenciales de BD en el código fuente.
-- El archivo `.env` no debe commitearse al repositorio.
+- Nunca almacenar contraseñas en texto plano — usar `bcryptjs.hash()`.
+- No exponer `JWT_SECRET` ni credenciales en el código fuente.
+- `.env` no debe commitearse (incluido en `.gitignore`).
+- En producción: `NODE_ENV=production` oculta el stack trace en errores.
 
-### Base datos
+### Base de datos
 
-- Usar **soft delete** (`activo: 0`) en lugar de eliminar registros físicamente.
-- Definir las asociaciones entre modelos en `src/models/index.js`.
+- Usar **soft delete** (`activo: 0`) en lugar de borrado físico.
+- Asociaciones entre modelos definidas en `src/models/index.js`.
 
 ### Pruebas
 
-- Las pruebas unitarias **no deben conectarse a la BD real**: usar `jest.mock()` para todos los modelos y `sequelize`.
-- Las pruebas de integración usan `app-test.js` (Express sin `listen`) + Supertest.
-- Agregar `beforeEach(() => jest.clearAllMocks())` en cada `describe` para evitar contaminación entre tests.
-- Las aserciones de `rollback` solo aplican cuando el error ocurre dentro del bloque `catch`. Un `return` directo dentro del `try` no activa `rollback`.
+- Pruebas unitarias: no conectar a BD real — usar `jest.mock()`.
+- Pruebas de integración: usar `app-test.js` (Express sin `listen`) + Supertest.
+- `beforeEach(() => jest.clearAllMocks())` en cada `describe` para evitar contaminación.
 
 ### Control de versiones
 
-- Usar ramas por funcionalidad: `feature/nombre-modulo`.
-- Hacer commits atómicos con mensajes descriptivos.
-- No commitear archivos generados: `node_modules/`, `coverage/`, `uploads/`.
+- Ramas por funcionalidad: `feature/nombre-modulo`.
+- Commits atómicos con mensajes descriptivos.
+- No commitear: `node_modules/`, `coverage/`, `uploads/`, `.env`.
 
 ---
 
-## Despliegue en la nube
+## Despliegue en Railway
+
+El sistema está desplegado completamente en Railway con tres servicios:
+
+| Servicio | URL | Estado |
+| --- | --- | --- |
+| **Frontend** | `https://successful-grace-production-b275.up.railway.app` | Online |
+| **Backend** | `https://sistema-ferreteria-production-ffd7.up.railway.app` | Online |
+| **MySQL** | Internal Railway service | Online |
 
 ### Preparación previa
 
-Antes de desplegar, verificar que se cumplen estos requisitos:
-
-| Requisito | Archivo | Estado |
+| Requisito | Variable | Descripción |
 | --- | --- | --- |
-| Variables de entorno configuradas | `server/.env` | Completar desde `server/.env.example` |
-| Variable de entorno del frontend | `client/.env.production` | Completar desde `client/.env.example` |
-| `JWT_SECRET` con mínimo 64 caracteres | `server/.env` | Generar con el comando de abajo |
-| `DB_PASSWORD` con contraseña segura | `server/.env` | Obligatorio en producción |
-| `FRONTEND_URL` apuntando al dominio real | `server/.env` | Requerido para CORS |
-| `VITE_API_URL` apuntando al backend real | `client/.env.production` | Requerido para el build |
+| `JWT_SECRET` ≥ 64 chars | `server/.env` | Generar con `crypto.randomBytes(64)` |
+| `DB_PASSWORD` segura | `server/.env` | Obligatorio en producción |
+| `FRONTEND_URL` | `server/.env` | URL del frontend para CORS |
+| `VITE_API_URL` | `client/.env.production` | URL del backend para el build |
+| `DB_PORT` | `server/.env` | Railway asigna puerto dinámico (no 3306) |
+
+### Variables Railway importantes
+
+```env
+# Backend (server)
+NODE_ENV=production
+DB_HOST=<MYSQLHOST de Railway>
+DB_PORT=<MYSQLPORT de Railway>
+DB_USER=<MYSQLUSER de Railway>
+DB_PASSWORD=<MYSQLPASSWORD de Railway>
+DB_NAME=railway
+DB_SSL=false
+JWT_SECRET=<clave_segura>
+JWT_EXPIRES_IN=8h
+FRONTEND_URL=https://successful-grace-production-b275.up.railway.app
+LOGIN_RATE_LIMIT_MAX=10
+
+# Frontend (client)
+VITE_API_URL=https://sistema-ferreteria-production-ffd7.up.railway.app
+```
+
+### Importar la base de datos en Railway
 
 ```bash
-# Generar JWT_SECRET seguro
-node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+# Desde la Console de Railway (MySQL service)
+curl -s https://raw.githubusercontent.com/jeanbautista27-tech/sistema-ferreteria-/master/database/ferreteria_db_railway.sql | mysql -u root -p$MYSQL_ROOT_PASSWORD railway
+curl -s https://raw.githubusercontent.com/jeanbautista27-tech/sistema-ferreteria-/master/database/datos_base.sql | mysql -u root -p$MYSQL_ROOT_PASSWORD railway
+curl -s https://raw.githubusercontent.com/jeanbautista27-tech/sistema-ferreteria-/master/database/tablas_faltantes.sql | mysql -u root -p$MYSQL_ROOT_PASSWORD railway
 ```
 
----
-
-### Backend — paso a paso
-
-#### 1. Configurar variables de entorno
+### Verificar el despliegue
 
 ```bash
-cd server
-cp .env.example .env
-# Editar .env con los valores reales de producción
+curl https://sistema-ferreteria-production-ffd7.up.railway.app/api/health
+# { "ok": true, "msg": "Sistema Ferretería activo", "env": "production" }
 ```
-
-#### 2. Instalar dependencias de producción
-
-```bash
-npm install --omit=dev
-```
-
-#### 3. Instalar PM2 globalmente
-
-```bash
-npm install -g pm2
-```
-
-#### 4. Iniciar el servidor con PM2
-
-```bash
-# Iniciar en modo producción
-pm2 start ecosystem.config.js --env production
-
-# Configurar inicio automático al reiniciar el servidor
-pm2 save
-pm2 startup
-```
-
-#### 5. Comandos útiles de PM2
-
-```bash
-pm2 status                     # Ver estado de todos los procesos
-pm2 logs ferreteria-api        # Ver logs en tiempo real
-pm2 restart ferreteria-api     # Reiniciar el proceso
-pm2 stop ferreteria-api        # Detener el proceso
-pm2 monit                      # Monitor interactivo
-```
-
----
-
-### Frontend — paso a paso
-
-#### 1. Configurar la URL del backend
-
-```bash
-cd client
-
-# Crear el archivo de entorno de producción
-cp .env.example .env.production
-# Editar .env.production:
-#   VITE_API_URL=https://api.tudominio.com
-```
-
-#### 2. Generar el build de producción
-
-```bash
-npm run build
-# Los archivos estáticos se generan en client/dist/
-```
-
-#### 3. Servir los archivos estáticos
-
-Los archivos de `client/dist/` se pueden servir de tres formas:
-
-**Opción A — Nginx** (recomendado)
-
-```nginx
-server {
-    listen 80;
-    server_name tudominio.com;
-
-    root /var/www/ferreteria/client/dist;
-    index index.html;
-
-    # SPA: redirigir todas las rutas al index.html
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-
-    # Proxy al backend Node.js
-    location /api/ {
-        proxy_pass         http://localhost:3002;
-        proxy_http_version 1.1;
-        proxy_set_header   Upgrade $http_upgrade;
-        proxy_set_header   Connection 'upgrade';
-        proxy_set_header   Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-
-    location /uploads/ {
-        proxy_pass http://localhost:3002;
-    }
-}
-```
-
-**Opción B — serve (Node.js)**
-
-```bash
-npm install -g serve
-serve -s client/dist -l 3000
-```
-
-**Opción C — plataformas de hosting estático**
-
-`client/dist/` se puede subir directamente a Netlify, Vercel o AWS S3 + CloudFront.
-
----
-
-### Proveedores de nube recomendados
-
-| Componente | Opciones recomendadas |
-| --- | --- |
-| **Backend** (Node.js) | Railway, Render, Fly.io, AWS EC2, DigitalOcean Droplet |
-| **Frontend** (React) | Vercel, Netlify, Cloudflare Pages, AWS S3 + CloudFront |
-| **Base de datos** (MySQL) | PlanetScale, Railway MySQL, AWS RDS, DigitalOcean Managed DB |
-
----
 
 ### Checklist de seguridad para producción
 
-- [ ] `NODE_ENV=production` configurado en el servidor
+- [ ] `NODE_ENV=production` configurado
 - [ ] `JWT_SECRET` de al menos 64 caracteres aleatorios
 - [ ] `DB_PASSWORD` con contraseña fuerte
-- [ ] `FRONTEND_URL` configurado con el dominio real (CORS)
-- [ ] HTTPS habilitado (certificado SSL/TLS activo)
-- [ ] Archivos `.env` excluidos del repositorio (`.gitignore` configurado)
-- [ ] `node_modules/`, `coverage/` y `uploads/` excluidos del repositorio
-- [ ] PM2 configurado con inicio automático (`pm2 startup`)
-- [ ] Backups automáticos de la base de datos programados
-
----
-
-### Verificar que el despliegue es correcto
-
-```bash
-# El endpoint /api/health debe responder con ok: true
-curl https://api.tudominio.com/api/health
-
-# Respuesta esperada:
-# { "ok": true, "msg": "Sistema Ferretería activo", "env": "production" }
-```
+- [ ] `FRONTEND_URL` con dominio real (CORS)
+- [ ] HTTPS habilitado (Railway lo gestiona automáticamente)
+- [ ] `.env` excluido del repositorio
+- [ ] `node_modules/`, `coverage/`, `uploads/` excluidos del repositorio
 
 ---
 

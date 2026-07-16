@@ -20,7 +20,6 @@ import Reportes from './pages/Reportes';
 import Usuarios from './pages/Usuarios';
 import Configuracion from './pages/Configuracion';
 import Logs from './pages/Logs';
-import Mantenimiento from './pages/Mantenimiento';
 
 export default function App() {
     return (
@@ -46,7 +45,6 @@ export default function App() {
                     <Route path="usuarios" element={<Usuarios />} />
                     <Route path="configuracion" element={<Configuracion />} />
                     <Route path="logs" element={<Logs />} />
-                    <Route path="mantenimiento" element={<Mantenimiento />} />
                 </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

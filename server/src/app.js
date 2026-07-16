@@ -72,7 +72,6 @@ app.use('/api/usuarios',      require('./routes/usuariosRoutes'));
 app.use('/api/configuracion', require('./routes/configuracionRoutes'));
 app.use('/api/logs',          require('./routes/logRoutes'));
 app.use('/api/dashboard',     require('./routes/dashboardRoutes'));
-app.use('/api/mantenimiento', require('./routes/mantenimientoRoutes'));
 
 // ── Health check ──────────────────────────────────────────────
 app.get('/api/health', (_req, res) =>

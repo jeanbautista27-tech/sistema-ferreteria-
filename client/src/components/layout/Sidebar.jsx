@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard, ShoppingCart, Package, Tag, Users, Truck,
     TrendingUp, DollarSign, Warehouse, FileBarChart, Settings, Shield,
-    LogOut, RotateCcw, X, HardDrive
+    LogOut, RotateCcw, X
 } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import api from '../../api/axios';
@@ -31,7 +31,6 @@ const navItems = [
     { to: '/reportes',     icon: FileBarChart,    label: 'Reportes',          roles: ['Administrador'] },
     { to: '/usuarios',     icon: Shield,          label: 'Usuarios',          roles: ['Administrador'] },
     { to: '/configuracion',icon: Settings,        label: 'Configuración',     roles: ['Administrador'] },
-    { to: '/mantenimiento',icon: HardDrive,       label: 'Mantenimiento',     roles: ['Administrador'] },
 ];
 
 export default function Sidebar({ isOpen, setIsOpen }) {
