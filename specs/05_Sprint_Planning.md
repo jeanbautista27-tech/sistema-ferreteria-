@@ -88,7 +88,23 @@
 - Sistema completo desplegado en Railway
 - Dashboard con 4 gráficos y KPIs en tiempo real
 - Exportación Excel y PDF funcional
-- 290 pruebas automatizadas — 0 fallos
+- 362 pruebas automatizadas — 0 fallos
+
+---
+
+## Sprint 5 — Mejoras de interfaz solicitadas por el cliente
+
+**Duración:** 1 semana | **Objetivo:** Ajustes visuales según retroalimentación del cliente
+**Story Points:** 1 SP
+
+| Item | HU | Descripción | SP | Estado |
+| --- | --- | --- | --- | --- |
+| 21 | HU-21 | Cambio de color del sidebar de morado a negro | 1 | ✅ Done |
+
+**Entregables del Sprint 5:**
+- Sidebar con fondo negro (`#111827` → `#1f2937`) en lugar de degradado morado
+- Cambio visible en producción (Railway) tras push automático
+- Sin impacto en pruebas existentes — 362/362 siguen pasando
 
 ---
 

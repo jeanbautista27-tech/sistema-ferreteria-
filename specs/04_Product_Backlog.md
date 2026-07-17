@@ -28,6 +28,7 @@
 | 18 | HU-17 | Reportes Excel y PDF | Reportes | 5 | Sprint 4 | ✅ Done |
 | 19 | HU-18 | Dashboard con KPIs y gráficos | Dashboard | 5 | Sprint 4 | ✅ Done |
 | 20 | HU-20 | Logs de auditoría | Logs | 2 | Sprint 4 | ✅ Done |
+| 21 | HU-21 | Cambio de color del sidebar de morado a negro | UI | 1 | Sprint 5 | ✅ Done |
 
 ---
 

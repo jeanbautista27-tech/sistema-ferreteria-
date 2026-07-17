@@ -34,3 +34,4 @@ Como [rol], quiero [funcionalidad], para [objetivo de negocio].
 | HU-18 | Administrador | Como administrador, quiero ver el dashboard con KPIs del negocio en tiempo real. | KPIs día, stock crítico, tendencia 7 días, comparativa ventas/compras. | 5 | ✅ Prod |
 | HU-19 | Administrador | Como administrador, quiero gestionar el catálogo de productos con filtros por nombre y categoría. | Crear/editar/eliminar (soft). Filtrar por nombre y categoría. | 5 | ✅ Prod |
 | HU-20 | Administrador | Como administrador, quiero ver el historial de acciones del sistema para auditoría. | Logs con usuario, acción, IP, fecha. | 2 | ✅ Prod |
+| HU-21 | Todos los roles | Como usuario del sistema, quiero que el menú lateral tenga fondo negro para mayor contraste y legibilidad. | El sidebar muestra fondo negro en todas las vistas y dispositivos. | 1 | ✅ Prod |

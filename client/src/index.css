@@ -1,6 +1,6 @@
 /* =====================================================
    SISTEMA FERRETERÍA — Estilo Neumórfico / Glassmorphism
-   Sidebar Púrpura + Navbar Superior + Main Gris Claro
+   Sidebar Púrpura + Navbar Superior + Main Gris Claro → Sidebar Negro
    ===================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -14,9 +14,9 @@
 }
 
 :root {
-  /* Sidebar: Degradado Púrpura */
-  --sidebar-bg-from: #6c3fc5;
-  --sidebar-bg-to: #9b4dca;
+  /* Sidebar: Negro (HU-21 — solicitado por el cliente) */
+  --sidebar-bg-from: #111827;
+  --sidebar-bg-to:   #1f2937;
   --sidebar-text: rgba(255, 255, 255, 0.75);
   --sidebar-active: rgba(255, 255, 255, 0.95);
   --sidebar-hover-bg: rgba(255, 255, 255, 0.12);
@@ -43,7 +43,7 @@
   --grad-yellow: linear-gradient(135deg, #f59e0b, #f97316);
   --grad-pink: linear-gradient(135deg, #ec4899, #f43f5e);
   --grad-green: linear-gradient(135deg, #22c55e, #16a34a);
-  --grad-sidebar: linear-gradient(180deg, #6c3fc5 0%, #9b4dca 100%);
+  --grad-sidebar: linear-gradient(180deg, #111827 0%, #1f2937 100%);
 
   /* Text */
   --text-primary: #1e1b4b;

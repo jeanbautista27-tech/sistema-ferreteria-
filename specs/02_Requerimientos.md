@@ -146,4 +146,5 @@
 | RNF-15 | Usabilidad | Notificaciones visuales en operaciones | Toast success/error |
 | RNF-16 | Usabilidad | POS con soporte lector de código de barras | Hook `useBarcodeScanner` |
 | RNF-17 | Portabilidad | `VITE_API_URL` configurable sin cambiar código | Build de producción |
+| RNF-18 | Usabilidad | El menú lateral (sidebar) debe presentar fondo negro (`#111827` → `#1f2937`) en lugar de morado | Sidebar visible con fondo negro en producción |
 

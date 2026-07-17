@@ -89,6 +89,7 @@ DESP = Estado en producción
 | RF-03.3-CAT | HU-19 | S1 | Categorías | CRUD /api/categorias | Categorias.jsx | Categoria | categoriasController | categoriasController.test.js | categorias.integration.test.js | ✅ |
 | RF-CLI | HU-04 | S1 | Clientes | CRUD /api/clientes | Clientes.jsx, POS.jsx | Cliente | clientesController | clientesController.test.js | clientes.integration.test.js | ✅ |
 | RF-PROV | HU-08 | S1 | Proveedores | CRUD /api/proveedores | Proveedores.jsx | Proveedor | proveedoresController | proveedoresController.test.js | proveedores.integration.test.js | ✅ |
+| RNF-18 | HU-21 | S5 | UI / Sidebar | — | Sidebar.jsx, index.css | — | — | — (cambio solo CSS) | — | ✅ |
 
 ---
 
@@ -106,6 +107,6 @@ DESP = Estado en producción
 | Pruebas unitarias | 235 |
 | Pruebas de integración | 127 |
 | Suites de integración | 9 |
-| Requerimientos desplegados en producción | 63/63 (100%) |
+| Requerimientos desplegados en producción | 64/64 (100%) |
 
-**Versión:** 2.0 | **Estado:** Verificado — 362/362 pruebas pasando
+**Versión:** 2.1 | **Estado:** Verificado — 362/362 pruebas pasando
