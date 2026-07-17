@@ -59,17 +59,17 @@ DESP = Estado en producción
 | RF-06.1 | HU-11 | S2 | Inventario | POST /api/inventario/ajustar | Inventario.jsx | Producto, InventarioMovimiento | inventarioController.ajustarStock | inventarioController.test.js | — | ✅ |
 | RF-06.2 | HU-11 | S2 | Inventario | GET /api/inventario/movimientos?producto_id= | Inventario.jsx | InventarioMovimiento | inventarioController.getMovimientos | inventarioController.test.js | — | ✅ |
 | RF-06.3 | HU-10 | S1 | Inventario | GET /api/inventario/stock | Inventario.jsx | Producto | inventarioController.getStock | inventarioController.test.js | — | ✅ |
-| RF-07.1 | HU-12 | S3 | Caja | POST /api/caja/abrir | Caja.jsx | Caja | cajaController.abrir | cajaController.test.js | — | ✅ |
-| RF-07.2 | HU-12 | S3 | Caja | PUT /api/caja/cerrar/:id | Caja.jsx | Caja, Venta, CajaEgreso | cajaController.cerrar | cajaController.test.js | — | ✅ |
-| RF-07.3 | HU-13 | S3 | Caja | POST /api/caja/movimiento | Caja.jsx | CajaEgreso | cajaController.registrarMovimiento | cajaController.test.js | — | ✅ |
+| RF-07.1 | HU-12 | S3 | Caja | POST /api/caja/abrir | Caja.jsx | Caja | cajaController.abrir | cajaController.test.js | caja.integration.test.js | ✅ |
+| RF-07.2 | HU-12 | S3 | Caja | PUT /api/caja/cerrar/:id | Caja.jsx | Caja, Venta, CajaEgreso | cajaController.cerrar | cajaController.test.js | caja.integration.test.js | ✅ |
+| RF-07.3 | HU-13 | S3 | Caja | POST /api/caja/movimiento | Caja.jsx | CajaEgreso | cajaController.registrarMovimiento | cajaController.test.js | caja.integration.test.js | ✅ |
 | RF-08.1 | HU-06 | S3 | Cotizaciones | POST /api/cotizaciones | Cotizaciones.jsx | Cotizacion | cotizacionesController.create | cotizacionesController.test.js | — | ✅ |
 | RF-08.2 | HU-06 | S3 | Cotizaciones | POST /api/cotizaciones | Cotizaciones.jsx | Cotizacion | cotizacionesController.create | cotizacionesController.test.js | — | ✅ |
 | RF-08.3 | HU-06 | S3 | Cotizaciones | PUT /api/cotizaciones/:id/anular | Cotizaciones.jsx | Cotizacion | cotizacionesController.anular | cotizacionesController.test.js | — | ✅ |
-| RF-09.1 | HU-16 | S3 | Devoluciones | POST /api/devoluciones | Ventas.jsx | Venta | devolucionesController.create | devolucionesController.test.js | — | ✅ |
-| RF-09.2 | HU-16 | S3 | Devoluciones | POST /api/devoluciones | Ventas.jsx | DetalleVenta | devolucionesController.create | devolucionesController.test.js | — | ✅ |
-| RF-09.3 | HU-16 | S3 | Devoluciones | POST /api/devoluciones | Ventas.jsx | Caja | devolucionesController.create | devolucionesController.test.js | — | ✅ |
-| RF-09.4 | HU-16 | S3 | Devoluciones | POST /api/devoluciones | Ventas.jsx | Producto, InventarioMovimiento | devolucionesController.create | devolucionesController.test.js | — | ✅ |
-| RF-09.5 | HU-16 | S3 | Devoluciones | POST /api/devoluciones | Ventas.jsx | Devolucion | devolucionesController.create | devolucionesController.test.js | — | ✅ |
+| RF-09.1 | HU-16 | S3 | Devoluciones | POST /api/devoluciones | Ventas.jsx | Venta | devolucionesController.create | devolucionesController.test.js | devoluciones.integration.test.js | ✅ |
+| RF-09.2 | HU-16 | S3 | Devoluciones | POST /api/devoluciones | Ventas.jsx | DetalleVenta | devolucionesController.create | devolucionesController.test.js | devoluciones.integration.test.js | ✅ |
+| RF-09.3 | HU-16 | S3 | Devoluciones | POST /api/devoluciones | Ventas.jsx | Caja | devolucionesController.create | devolucionesController.test.js | devoluciones.integration.test.js | ✅ |
+| RF-09.4 | HU-16 | S3 | Devoluciones | POST /api/devoluciones | Ventas.jsx | Producto, InventarioMovimiento | devolucionesController.create | devolucionesController.test.js | devoluciones.integration.test.js | ✅ |
+| RF-09.5 | HU-16 | S3 | Devoluciones | POST /api/devoluciones | Ventas.jsx | Devolucion | devolucionesController.create | devolucionesController.test.js | devoluciones.integration.test.js | ✅ |
 | RF-10.1 | HU-14 | S3 | CxC | POST /api/cuentas-cobrar/:id/abonos | CuentasCobrar.jsx | AbonoCuenta | cuentasCobrarController.registrarAbono | cuentasCobrarController.test.js | — | ✅ |
 | RF-10.2 | HU-14 | S3 | CxC | POST /api/cuentas-cobrar/:id/abonos | CuentasCobrar.jsx | CuentaCobrar | cuentasCobrarController.registrarAbono | cuentasCobrarController.test.js | — | ✅ |
 | RF-10.3 | HU-14 | S3 | CxC | POST /api/cuentas-cobrar/:id/abonos | CuentasCobrar.jsx | Caja | cuentasCobrarController.registrarAbono | cuentasCobrarController.test.js | — | ✅ |
@@ -86,6 +86,9 @@ DESP = Estado en producción
 | RF-13.4 | HU-18 | S4 | Dashboard | GET /api/dashboard/stats | Dashboard.jsx | Venta, Compra | dashboardController.getDashboardStats | dashboardController.test.js | — | ✅ |
 | RF-14.1 | HU-03 | S1 | Config | PUT /api/configuracion | Configuracion.jsx | Configuracion | configuracionController.update | configuracionController.test.js | — | ✅ |
 | RF-14.2 | HU-03 | S1 | Config | PUT /api/configuracion | Configuracion.jsx | — | configuracionRoutes.js | — | — | ✅ |
+| RF-03.3-CAT | HU-19 | S1 | Categorías | CRUD /api/categorias | Categorias.jsx | Categoria | categoriasController | categoriasController.test.js | categorias.integration.test.js | ✅ |
+| RF-CLI | HU-04 | S1 | Clientes | CRUD /api/clientes | Clientes.jsx, POS.jsx | Cliente | clientesController | clientesController.test.js | clientes.integration.test.js | ✅ |
+| RF-PROV | HU-08 | S1 | Proveedores | CRUD /api/proveedores | Proveedores.jsx | Proveedor | proveedoresController | proveedoresController.test.js | proveedores.integration.test.js | ✅ |
 
 ---
 
@@ -93,7 +96,7 @@ DESP = Estado en producción
 
 | Categoría | Total |
 | --- | --- |
-| Requerimientos funcionales trazados | 60 |
+| Requerimientos funcionales trazados | 63 |
 | Historias de usuario cubiertas | 20 |
 | Sprints | 4 |
 | Módulos con trazabilidad completa | 19 |
@@ -101,5 +104,8 @@ DESP = Estado en producción
 | Páginas React enlazadas | 19 |
 | Modelos Sequelize enlazados | 23 |
 | Pruebas unitarias | 235 |
-| Pruebas de integración | 55 |
-| Requerimientos desplegados en producción | 60/60 (100%) |
+| Pruebas de integración | 127 |
+| Suites de integración | 9 |
+| Requerimientos desplegados en producción | 63/63 (100%) |
+
+**Versión:** 2.0 | **Estado:** Verificado — 362/362 pruebas pasando

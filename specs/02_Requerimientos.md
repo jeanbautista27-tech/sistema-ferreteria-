@@ -142,7 +142,8 @@
 | RNF-11 | Disponibilidad | Puerto dinámico via `PORT` env var | Railway asigna puerto |
 | RNF-12 | Mantenibilidad | Patrón MVC estricto | Sin lógica en rutas |
 | RNF-13 | Calidad | Cobertura pruebas ≥ 90% controllers | Reporte Jest |
-| RNF-14 | Calidad | 290 pruebas automatizadas pasando | `npm test` → 0 fallos |
+| RNF-14 | Calidad | 362 pruebas automatizadas pasando (235 unitarias + 127 integración) | `npm test` → 0 fallos |
 | RNF-15 | Usabilidad | Notificaciones visuales en operaciones | Toast success/error |
 | RNF-16 | Usabilidad | POS con soporte lector de código de barras | Hook `useBarcodeScanner` |
 | RNF-17 | Portabilidad | `VITE_API_URL` configurable sin cambiar código | Build de producción |
+

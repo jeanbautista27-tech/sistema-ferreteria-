@@ -121,7 +121,7 @@ curl -s https://raw.githubusercontent.com/jeanbautista27-tech/sistema-ferreteria
 - [x] `.env` excluido del repositorio (`.gitignore`)
 - [x] `node_modules/`, `coverage/`, `uploads/` excluidos
 - [x] Health check respondiendo HTTP 200
-- [x] 290 pruebas pasando antes del despliegue
+- [x] 362 pruebas pasando antes del despliegue (235 unitarias + 127 integración)
 
 ---
 
@@ -134,5 +134,5 @@ curl https://sistema-ferreteria-production-ffd7.up.railway.app/api/health
 
 # Pruebas locales antes de push
 cd server && npm test
-# → 290 passed, 0 failed
+# → 362 passed, 0 failed (235 unitarias + 127 integración)
 ```
