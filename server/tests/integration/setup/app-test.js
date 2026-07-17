@@ -13,14 +13,20 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/auth',         require('../../../src/routes/authRoutes'));
-app.use('/api/productos',    require('../../../src/routes/productosRoutes'));
-app.use('/api/ventas',       require('../../../src/routes/ventasRoutes'));
-app.use('/api/compras',      require('../../../src/routes/comprasRoutes'));
-app.use('/api/clientes',     require('../../../src/routes/clientesRoutes'));
-app.use('/api/caja',         require('../../../src/routes/cajaRoutes'));
-app.use('/api/inventario',   require('../../../src/routes/inventarioRoutes'));
-app.use('/api/devoluciones', require('../../../src/routes/devolucionesRoutes'));
+app.use('/api/auth',          require('../../../src/routes/authRoutes'));
+app.use('/api/productos',     require('../../../src/routes/productosRoutes'));
+app.use('/api/ventas',        require('../../../src/routes/ventasRoutes'));
+app.use('/api/compras',       require('../../../src/routes/comprasRoutes'));
+app.use('/api/clientes',      require('../../../src/routes/clientesRoutes'));
+app.use('/api/caja',          require('../../../src/routes/cajaRoutes'));
+app.use('/api/inventario',    require('../../../src/routes/inventarioRoutes'));
+app.use('/api/devoluciones',  require('../../../src/routes/devolucionesRoutes'));
+app.use('/api/categorias',    require('../../../src/routes/categoriasRoutes'));
+app.use('/api/proveedores',   require('../../../src/routes/proveedoresRoutes'));
+app.use('/api/usuarios',      require('../../../src/routes/usuariosRoutes'));
+app.use('/api/cotizaciones',  require('../../../src/routes/cotizacionesRoutes'));
+app.use('/api/cuentas-cobrar',require('../../../src/routes/cuentasCobrarRoutes'));
+app.use('/api/cuentas-pagar', require('../../../src/routes/cuentasPagarRoutes'));
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
